@@ -1,9 +1,9 @@
-import Classes.Node;
-import Classes.RandomVariable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import Classes.BayesianNetwork;
+import Interfaces.*;
 
 public class Main {
 
@@ -14,39 +14,113 @@ public class Main {
 
     }
 
-    public Classes.Distribution Enumeration(RandomVariable query, Classes.Assignment E, BayesianNetwork network){ //returns a distribution over x
+    public Classes.Distribution EnumerationInfer(RandomVariable query, Classes.Assignment E, BayesianNetwork network){ //returns a distribution over x
 
-        //Q(X)<- a distribution over X, empty
-        Classes.Distribution X = new Classes.Distribution(query);
-        Iterator<Interfaces.Value> xDomain = query.getDomain().iterator();
+        //Create a distribution over the query variable to be filled out
+        Classes.Distribution D = new Classes.Distribution(query);
 
-        //for each xi in X do
+        Iterator<Value> xDomain = query.getDomain().iterator();
+
+        //for each value in queries domain
         while(xDomain.hasNext()){
-            //Q(xi) <- Enumerate-All(vars, exi)
-            X.put(xDomain.next(), enumerateAll(vars, exi));
-            //where exi is e extended with X=xi
+
+            //add the query variable w/ that value from its domain in to the assignment with ONLY the observered variables
+            Value nextDomain = xDomain.next();
+            Assignment copy = E.copy();
+            copy.put(query, nextDomain);
+
+            //find the probability of that possible world using the bayesian network and add it to the distribution
+            D.set(xDomain.next(), enumerateAll(copy, network, 0));
+
         }
             
                 
-        X.normalize();
-        return X;
+        D.normalize();
+        return D;
     
     
 
     }
 
-    public static float enumerateAll(vars, e){ //returns a float
-        if(vars.isEmpty()){
+
+    //recursivly computes sums of products of nodes from bn for a possible world
+    public static double enumerateAll(Assignment evidence, BayesianNetwork bn, int currIndex){ //returns a float
+
+        List<RandomVariable> vars = bn.getVariablesSortedTopologically();
+
+        //if there are "no variables left" to be enumerated
+        if(currIndex >= vars.size()){
             return 1.0;
         }
-        Randomvariable V = vars.get(0);
 
-        if V is an evidence variable with value v in e
-            then return P(v | parents(V)) * ENUMERATE-ALL(rest(vars), e)
-        else:
-            return sum(v) P(v|parents(V)) * EnumerateA;;(rest((vars)), ev)
-                where ev is e extended with V=v
+        RandomVariable V = vars.get(currIndex);
+
+        //if V is an evidence variable with value v in e
+            //test if V is an evidence variable...means to test if v is in e
+
+
+        //if the next node in the networks variable is an observed variable
+        if(evidence.containsKey(V)){
+
+            //not sure why we need to copy this yet
+            evidence = evidence.copy();
+
+            //we are right after a junction in the tree, multiply pr of the nodes below the junction
+            return bn.getProbability(V, evidence) * enumerateAll(evidence, bn, currIndex+1 );
+            //return P(v | parents(V)) * ENUMERATE-ALL(rest(vars), e);
+        }else{
+            //return sum(v) P(v|parents(V)) * EnumerateA;;(rest((vars)), ev)
+            //    where ev is e extended with V=v
+
+            //we are at a junction in the tree, product its childrens shoots recursivly and sum them
+
+            
+            Iterator<Interfaces.Value> VDomain = V.getDomain().iterator();
+
+            //for each value in currect verticies (random variables) domain
+            double sum = 0.0;
+            while(VDomain.hasNext()){
+
+                //consider the possible world where that variable takes on that value 
+                //i.e add it as evidence with each value it can take on (speeratly of course)
+                evidence.put(V, VDomain.next());
+                Assignment ev = evidence.copy();
+
+                //get the probability from the node with that assignment
+                double pr = bn.getProbability(V, ev);
+
+                //continue until that branch has no more nodes to explore
+                double next = enumerateAll(ev, bn, currIndex+1);
+                sum+= pr*next;
+            }
+
+            return sum;
+        }
     }
+
+
+    //rejection sampling produces samples from a hard to sample
+    //distribution given an easier to sample one
+
+    //generates samples from prior distribution specified by netowkr
+    //then rejects those that do not match the evidence
+    //the estimate P(X=x|e) is obtained by counting how often X=x occours in the remaining samples
+    public static Distribution rejection-sampling(X,e,bn,N)
+    X is query variable
+    e is overserved values for e in E
+    bn is a bayesean network
+    N is the total number of samples generated
+
+    local vars: C, a vector of counts for each value of X, inditially 0
+
+    for j 1->N do
+        x <- prior-sample(bn)
+        if x is consistent with e:
+            C[j]<-C[j]+1 where xj is the value of X in x
+    return Normalize(C)
+
+
+
 
 
 
