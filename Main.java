@@ -105,19 +105,73 @@ public class Main {
     //generates samples from prior distribution specified by netowkr
     //then rejects those that do not match the evidence
     //the estimate P(X=x|e) is obtained by counting how often X=x occours in the remaining samples
-    public static Distribution rejection-sampling(X,e,bn,N)
-    X is query variable
-    e is overserved values for e in E
-    bn is a bayesean network
-    N is the total number of samples generated
+    public static Distribution rejectionSampling(RandomVariable query, Assignment evidence, BayesianNetwork bn, int numSamples){
 
-    local vars: C, a vector of counts for each value of X, inditially 0
+        
+        //local vars: C, a vector of counts for each value of X, inditially 0
+        int[] counts = new int[query.getDomain().size()];
 
-    for j 1->N do
-        x <- prior-sample(bn)
-        if x is consistent with e:
-            C[j]<-C[j]+1 where xj is the value of X in x
-    return Normalize(C)
+        //for j 1->N do
+        for(int i = 0; i<numSamples; i++){
+
+            //x <- prior-sample(bn)
+            //if x is consistent with e:
+                //C[j]<-C[j]+1 where xj is the value of X in x
+
+        }
+
+        return Normalize(C)
+
+        
+    }
+    
+
+    public static Distribution likeleyhoodWeighting(RandomVariable query, Assignment evidence, BayesianNetwork bn, int numSamples){
+
+
+        //bn = bayesian network sepcifying joint distribution P(X1....Xn)
+        //local vars: W is a vector of weighted ounts for each value of X initally 0
+        int[] W = new int[query.getDomain().size()];
+
+        //for j =1 to N
+        for(int i = 0; i<numSamples; i++){
+            //x, w <- Weighted-sample(bn,e)
+            //W[j]<-W[j] + w where xj is the value of X in x
+
+        //return Normalize(W)
+    }
+
+    public static EventWeight weigthedSample(BayesianNetwork bn, Assignment evidence){ //returns an event and weight:
+        w <- 1;x an event with n elements, with values fixed from e
+        for i =1 to n do:
+            if Xi is an evidence variable with value xij in e
+                then w<- wx P(Xi=xij | parents(Xi))
+                else x[i] <- a random sample from P(Xi | parents(Xi))
+    
+        return x,w
+    }
+
+    public class EventWeight{
+        int weight;
+        RandomVariable var;
+        Value event;
+
+        public EventWeight(int weight, RandomVariable var, Value e){
+
+            this.weight = weight;
+            this.var =var;
+            this.event = e;
+
+        }
+    }
+
+
+
+
+    
+        
+            
+    
 
 
 
