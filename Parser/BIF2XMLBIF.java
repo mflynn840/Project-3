@@ -21,8 +21,12 @@ public class BIF2XMLBIF {
 	 * <p>
 	 * With no arguments: reads dog-problem.bif in the src tree 
 	 */
-	public static void main(String[] argv) throws IOException, ParserConfigurationException, SAXException {
-		String filename = "Examples/dog-problem.bif";
+
+	public BIF2XMLBIF(){
+
+	}
+	public BayesianNetwork getNetwork() throws IOException, ParserConfigurationException, SAXException {
+		/*String filename = "Examples/dog-problem.bif";
 		String networkName = "Dog-Problem";
 		if (argv.length > 0) {
 			filename = argv[0];
@@ -31,13 +35,16 @@ public class BIF2XMLBIF {
 			} else {
 				networkName = "Un=named network";
 			}
-		}
+		}*/
 
 
 		BIFParser parser = new BIFParser(new FileInputStream("Examples/dog-problem.bif"));
 		XMLBIFPrinter printer = new XMLBIFPrinter(System.out);
 		BayesianNetwork network = parser.parseNetwork();
-		printer.print(network, networkName);
+		printer.print(network);
+		return network;
 	}
+
+
 
 }

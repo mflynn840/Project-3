@@ -187,6 +187,12 @@ public class BayesianNetwork implements Interfaces.BayesianNetwork{
         
     }
 
+    public void printNodes(){
+        for(int i = 0; i<this.nodes.size(); i++){
+            System.out.println(this.nodes.get(i));
+        }
+    }
+
 
     public double getProbability(RandomVariable X, Assignment e) {
 
@@ -196,6 +202,14 @@ public class BayesianNetwork implements Interfaces.BayesianNetwork{
 		//trace("BayesianNetwork.getProb: result=" + result);
 		return result;
 
+    }
+
+    public CPT getDistribution(RandomVariable i){
+        return this.getNodeForVariable(i).getDistribution();
+    }
+
+    public ArrayList<Node> getNodes(){
+        return this.nodes;
     }
 
     public void setProbability(RandomVariable X, Assignment e, double p) {

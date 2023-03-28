@@ -29,6 +29,8 @@ public interface Domain extends Iterable<Value> {
 	public boolean isEmpty();
 	
 	public int size();
+
+	public int indexOf(Value value);
 	
 	public Iterator<Value> iterator();
 

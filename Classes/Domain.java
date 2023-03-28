@@ -22,6 +22,17 @@ public class Domain extends ArraySet<Value> implements Interfaces.Domain {
 		super(size);
 	}
 
+	public int indexOf(Value x){
+		if(this.contains(x)){
+			return this.indexOf(x);
+		}
+
+		else{
+			System.out.println("Value not found");
+			return -1;
+		}
+	}
+
 	public Domain(Value... values) {
 		this();
 		for (Value value : values) {

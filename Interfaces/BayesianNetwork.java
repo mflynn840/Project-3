@@ -3,6 +3,9 @@ package Interfaces;
 
 import java.util.List;
 import java.util.Set;
+import Classes.Node;
+import java.util.ArrayList;
+
 
 /**
  * A BayesianNetwork is a directed acyclic graph where the nodes
@@ -18,6 +21,7 @@ public interface BayesianNetwork {
 	 */
 	public void add(RandomVariable var);
 	
+	public ArrayList<Node> getNodes();
 	/**
 	 * Connect the node for the given RandomVariable to the nodes for
 	 * the given set of parent RandomVariables, with the given CPT.
@@ -26,11 +30,13 @@ public interface BayesianNetwork {
 	 */
 	public void connect(RandomVariable var, Set<RandomVariable> parents, CPT cpt);
 	
+	public void printNodes();
 	/**
 	 * Return the RandomVariables used in this BayesianNetwork.
 	 */
 	public Set<RandomVariable> getVariables();
 
+	public CPT getDistribution(RandomVariable i);
 	/**
 	 * Return the RandomVariables used in this BayesianNetwork sorted
 	 * topologically (so that parents precede their children).

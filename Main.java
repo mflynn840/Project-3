@@ -2,35 +2,54 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import Interfaces.*;
+import Parser.BIF2XMLBIF;
 
 public class Main {
 
     public static void main(String[] args){
+
+        BIF2XMLBIF parser = new BIF2XMLBIF();
+
+        try{
+            BayesianNetwork x = parser.getNetwork();
+
+            //x.printNodes();
+
+            //Distribution result = EnumerationInfer(x.getVariableByName("family-out"), new Classes.Assignment(), x);
+            Distribution result = rejectionSampling(x.getVariableByName("family-out"), new Classes.Assignment(), x, 10);
+            //System.out.println(result);
+        }catch(Exception ex){}
+        
 
 
 
 
     }
 
-    public Classes.Distribution EnumerationInfer(RandomVariable query, Classes.Assignment E, BayesianNetwork network){ //returns a distribution over x
+    public static Classes.Distribution EnumerationInfer(RandomVariable query, Classes.Assignment E, BayesianNetwork network){ //returns a distribution over x
 
         //Create a distribution over the query variable to be filled out
         Classes.Distribution D = new Classes.Distribution(query);
+        //System.out.println(D);
 
+        //System.out.println(query.getDomain().size());
         Iterator<Value> xDomain = query.getDomain().iterator();
+
 
         //for each value in queries domain
         while(xDomain.hasNext()){
 
             //add the query variable w/ that value from its domain in to the assignment with ONLY the observered variables
             Value nextDomain = xDomain.next();
+            //System.out.println(nextDomain);
             Assignment copy = E.copy();
             copy.put(query, nextDomain);
 
             //find the probability of that possible world using the bayesian network and add it to the distribution
-            D.set(xDomain.next(), enumerateAll(copy, network, 0));
+            D.set(nextDomain, enumerateAll(copy, network, 0));
 
         }
             
@@ -99,33 +118,85 @@ public class Main {
     }
 
 
+
+
     //rejection sampling produces samples from a hard to sample
     //distribution given an easier to sample one
 
     //generates samples from prior distribution specified by netowkr
     //then rejects those that do not match the evidence
     //the estimate P(X=x|e) is obtained by counting how often X=x occours in the remaining samples
+
+
+
     public static Distribution rejectionSampling(RandomVariable query, Assignment evidence, BayesianNetwork bn, int numSamples){
 
         
         //local vars: C, a vector of counts for each value of X, inditially 0
-        int[] counts = new int[query.getDomain().size()];
+        Distribution counts = new Classes.Distribution(query);
+        //Distribution counts = new int[query.getDomain().size()];
+
 
         //for j 1->N do
         for(int i = 0; i<numSamples; i++){
 
             //x <- prior-sample(bn)
+            Assignment x = priorSample(bn);
+            
+            if(isConsistent(x, evidence)){
+                counts.set(x.get(query), counts.get(x.get(query)) + 1);
+            }
             //if x is consistent with e:
                 //C[j]<-C[j]+1 where xj is the value of X in x
 
         }
 
-        return Normalize(C)
+        //normalize counts;
+        counts.normalize();
+        return counts;
 
         
     }
-    
 
+    public static Assignment priorSample(BayesianNetwork bn){
+        Assignment x = new Classes.Assignment();
+
+        ArrayList<Classes.Node> nodes = bn.getNodes();
+        List<RandomVariable> vars = bn.getVariablesSortedTopologically();
+
+        Random rnj = new Random();
+        for(int i = 0; i<vars.size(); i++){
+
+
+
+            CPT distribution = bn.getDistribution(vars.get(i));
+            float randomNum = rnj.nextFloat();
+
+            System.out.println(distribution);
+
+        
+        }
+
+        return x;
+
+    }
+    
+    public static boolean isConsistent(Assignment a, Assignment evidence){
+
+        if(a.keySet().equals(evidence.keySet())){
+            System.out.println("WARN: different key sets may cause problems");
+        }
+        for(RandomVariable key: evidence.keySet()){
+            if(!evidence.get(key).equals(a.get(key))){
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+    /* 
     public static Distribution likeleyhoodWeighting(RandomVariable query, Assignment evidence, BayesianNetwork bn, int numSamples){
 
 
