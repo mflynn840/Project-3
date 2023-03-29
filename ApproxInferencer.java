@@ -23,7 +23,10 @@ public class ApproxInferencer{
                 //System.out.println(evidence);
 
                 RandomVariable query = bn.getVariableByName(args[2]);
-                System.out.println(rejectionSampling(query, evidence, bn, numSamples));
+                System.out.println("Rejection sampling " + rejectionSampling(query, evidence, bn, numSamples));
+                System.out.println("Likelyhood weighting" + likeleyhoodWeighting(query, evidence, bn, numSamples));
+
+
 
             }catch(Exception ex){}
         }
@@ -161,20 +164,27 @@ public class ApproxInferencer{
         //for j =1 to N
         for(int i = 0; i<numSamples; i++){
             //x, w <- Weighted-sample(bn,e)
-            WeightedSample s = weightedSample(bn, e);
-            //W[j]<-W[j] + w where xj is the value of X in x
+            WeightedSample s = weightedSample(bn, evidence);
 
+            //W[j]<-W[j] + w where xj is the value of X in x
+            W.set(s.sample.get(query), W.get(s.sample.get(query)) + s.weight);
+
+            
+
+        }
         W.normalize();
         return W;
     }
 
-    public static WeightedSample weigthedSample(BayesianNetwork bn, Assignment evidence){ //returns an event and weight:
+    public static WeightedSample weightedSample(BayesianNetwork bn, Assignment evidence){ //returns an event and weight:
         //w <- 1;x an event with n elements, with values fixed from e
         WeightedSample w = new WeightedSample();
         List<RandomVariable> vars = bn.getVariablesSortedTopologically();
 
         //for i =1 to n do:
         for(int i = 0; i<vars.size(); i++){
+
+            RandomVariable current = vars.get(i);
             //if Xi is an evidence variable with value xij in e
             if(evidence.containsKey(vars.get(i))){
                 //then w<- wx P(Xi=xij | parents(Xi))
@@ -183,8 +193,23 @@ public class ApproxInferencer{
                 
             }else{
 
-                //x[i] <- a random sample from P(Xi | parents(Xi))
+                Iterator<Value> currentDomain = current.getDomain().iterator();
+                CPT distribution = bn.getDistribution(current);
+
+                //get the value with the probability closest
+                Value firstDomainValue = currentDomain.next();
+
                 
+                double nextRandom = Math.random();
+                //System.out.println(nextRandom);
+                if(nextRandom < distribution.get(firstDomainValue, w.sample)){
+                //System.out.println("picking true");
+                    w.sample.put(current, firstDomainValue);
+                }else{
+                    w.sample.put(current, currentDomain.next());
+                    //System.out.println("picking false");
+                }
+
             } 
         }
     
