@@ -149,4 +149,62 @@ public class ApproxInferencer{
         //System.out.println("is consistent");
         return true;
     }
+
+
+    public static Distribution likeleyhoodWeighting(RandomVariable query, Assignment evidence, BayesianNetwork bn, int numSamples){
+
+
+        //local vars: W is a vector of weighted ounts for each value of X initally 0
+        Distribution W = new Classes.Distribution(query);
+        
+        
+        //for j =1 to N
+        for(int i = 0; i<numSamples; i++){
+            //x, w <- Weighted-sample(bn,e)
+            WeightedSample s = weightedSample(bn, e);
+            //W[j]<-W[j] + w where xj is the value of X in x
+
+        W.normalize();
+        return W;
+    }
+
+    public static WeightedSample weigthedSample(BayesianNetwork bn, Assignment evidence){ //returns an event and weight:
+        //w <- 1;x an event with n elements, with values fixed from e
+        WeightedSample w = new WeightedSample();
+        List<RandomVariable> vars = bn.getVariablesSortedTopologically();
+
+        //for i =1 to n do:
+        for(int i = 0; i<vars.size(); i++){
+            //if Xi is an evidence variable with value xij in e
+            if(evidence.containsKey(vars.get(i))){
+                //then w<- wx P(Xi=xij | parents(Xi))
+                w.sample.put(vars.get(i), evidence.get(vars.get(i)));
+                w.weight *= bn.getProbability(vars.get(i), w.sample);
+                
+            }else{
+
+                //x[i] <- a random sample from P(Xi | parents(Xi))
+                
+            } 
+        }
+    
+        return w;
+    }
+
+
+
+}
+
+class WeightedSample{
+    double weight;
+    Assignment sample;
+
+    public WeightedSample(){
+
+        this.weight = 1.0;
+        this.sample = new Classes.Assignment();
+
+    }
+
+
 }
