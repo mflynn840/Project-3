@@ -31,6 +31,7 @@ public class RandomVariable implements Interfaces.RandomVariable {
     public int getDomainSize(){
         return this.domain.size();
     }
+    
 
 
     public Domain getDomain(){

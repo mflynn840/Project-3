@@ -17,5 +17,9 @@ public class Value<E> implements Interfaces.Value {
     public String printValueStr(){
         return this.value.toString();
     }
+
+    public String toString(){
+        return this.value.toString();
+    }
     
 }

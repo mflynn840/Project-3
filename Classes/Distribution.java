@@ -13,6 +13,10 @@ public class Distribution extends ArrayMap<Value, Double> implements Interfaces.
 
     public Distribution(RandomVariable e){
         super(e.getDomain().size());
+
+        for(Value domainValue: e.getDomain()){
+            this.put(domainValue, -1.0);
+        }
         this.var = e;
 
     }

@@ -34,6 +34,8 @@ public class CPT implements Interfaces.CPT {
     }
 
     protected Distribution getRowForAssignment(Assignment a) {
+
+		//System.out.println(a);
 		// Can't just do this, unfortunately:
 		//return this.table.get(a);
 		// Instead iterate through the assignments in our table until we find
@@ -57,6 +59,7 @@ public class CPT implements Interfaces.CPT {
     public double get(Value value, Assignment assignment) {
         Distribution row = getRowForAssignment(assignment);
 		if (row == null) {
+			System.out.println("ERRRRRR");
 			throw new IllegalArgumentException(assignment.toString());
 		} else {
 			return row.get(value);

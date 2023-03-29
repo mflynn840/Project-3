@@ -193,6 +193,8 @@ public class BayesianNetwork implements Interfaces.BayesianNetwork{
         }
     }
 
+    
+
 
     public double getProbability(RandomVariable X, Assignment e) {
 

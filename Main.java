@@ -134,17 +134,24 @@ public class Main {
         
         //local vars: C, a vector of counts for each value of X, inditially 0
         Distribution counts = new Classes.Distribution(query);
+        System.out.println(counts);
         //Distribution counts = new int[query.getDomain().size()];
 
 
         //for j 1->N do
         for(int i = 0; i<numSamples; i++){
-
+            System.out.println("taking sample " + i);
             //x <- prior-sample(bn)
-            Assignment x = priorSample(bn);
+            Assignment iid = priorSample(bn);
             
-            if(isConsistent(x, evidence)){
-                counts.set(x.get(query), counts.get(x.get(query)) + 1);
+            if(isConsistent(iid, evidence)){
+
+                System.out.println(iid.get(query));
+
+
+                System.out.println("debug 2");
+                counts.set(iid.get(query), counts.get(iid.get(query)) + 1.0);
+                System.out.println("debug 3");
             }
             //if x is consistent with e:
                 //C[j]<-C[j]+1 where xj is the value of X in x
@@ -161,21 +168,40 @@ public class Main {
     public static Assignment priorSample(BayesianNetwork bn){
         Assignment x = new Classes.Assignment();
 
-        ArrayList<Classes.Node> nodes = bn.getNodes();
+        //ArrayList<Classes.Node> nodes = bn.getNodes();
         List<RandomVariable> vars = bn.getVariablesSortedTopologically();
 
         Random rnj = new Random();
         for(int i = 0; i<vars.size(); i++){
 
+            RandomVariable current = vars.get(i);
+            //System.out.println("Current: " + current);
+            Iterator<Value> currentDomain = current.getDomain().iterator();
+            CPT distribution = bn.getDistribution(current);
+            //System.out.println("debug");
 
 
-            CPT distribution = bn.getDistribution(vars.get(i));
-            float randomNum = rnj.nextFloat();
+            //get the value with the probability closest
+            Value firstDomainValue = currentDomain.next();
 
-            System.out.println(distribution);
+            //System.out.println(distribution.get(firstDomainValue, x));
 
-        
+            double nextRandom = rnj.nextDouble();
+            //System.out.println(nextRandom);
+            if(nextRandom < distribution.get(firstDomainValue, x)){
+                //System.out.println("picking true");
+                x.put(current, firstDomainValue);
+            }else{
+                x.put(current, currentDomain.next());
+                //System.out.println("picking false");
+            }
+
+            //System.out.println("Debug 2");
+            //System.out.println(x);
+
         }
+
+        //System.out.println("Sample generated succesfully");
 
         return x;
 
@@ -183,15 +209,15 @@ public class Main {
     
     public static boolean isConsistent(Assignment a, Assignment evidence){
 
-        if(a.keySet().equals(evidence.keySet())){
-            System.out.println("WARN: different key sets may cause problems");
-        }
-        for(RandomVariable key: evidence.keySet()){
-            if(!evidence.get(key).equals(a.get(key))){
+        //System.out.println("debug 1");
+        for(RandomVariable x: a.keySet()){
+            if(evidence.containsKey(x) && evidence.get(x) != a.get(x)){
+                //System.out.println("not consistent");
                 return false;
             }
         }
 
+        //System.out.println("is consistent");
         return true;
     }
 }

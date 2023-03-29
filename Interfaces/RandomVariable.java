@@ -11,4 +11,5 @@ public interface RandomVariable {
 
     public String getName();
 
+    public int getDomainSize();
 }
