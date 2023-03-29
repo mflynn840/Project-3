@@ -15,7 +15,7 @@ public class Distribution extends ArrayMap<Value, Double> implements Interfaces.
         super(e.getDomain().size());
 
         for(Value domainValue: e.getDomain()){
-            this.put(domainValue, -1.0);
+            this.put(domainValue, 0.0);
         }
         this.var = e;
 

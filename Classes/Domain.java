@@ -1,6 +1,7 @@
 package Classes;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import Interfaces.Value;
 //import Classes.ArraySet;
@@ -40,6 +41,18 @@ public class Domain extends ArraySet<Value> implements Interfaces.Domain {
 		}
 	}
 
+	/*public Value itemAt(int index){
+		Iterator<Value> values = this.iterator();
+
+		Value temp = null;
+		
+		while(values.hasNext()){
+
+			temp = values.next();
+			
+		}
+		return temp;
+	}*/
 	public Domain(Collection<Value> collection) {
 		this();
 		for (Value value : collection) {
@@ -58,5 +71,12 @@ public class Domain extends ArraySet<Value> implements Interfaces.Domain {
 		System.out.println(range);
 		Domain booleans = new Domain(BooleanValue.TRUE, BooleanValue.FALSE);
 		System.out.println(booleans);
+	}
+
+
+	@Override
+	public Value itemAt(int index) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'itemAt'");
 	}
 }

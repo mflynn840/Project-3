@@ -7,6 +7,8 @@ import java.util.Random;
 import Interfaces.*;
 import Parser.BIF2XMLBIF;
 
+
+
 public class Main {
 
     public static void main(String[] args){
@@ -14,19 +16,29 @@ public class Main {
         BIF2XMLBIF parser = new BIF2XMLBIF();
 
         try{
-            BayesianNetwork x = parser.getNetwork();
+            BayesianNetwork x = parser.getNetwork("");
 
             //x.printNodes();
-
+            //readArgs(args);
             //Distribution result = EnumerationInfer(x.getVariableByName("family-out"), new Classes.Assignment(), x);
-            Distribution result = rejectionSampling(x.getVariableByName("family-out"), new Classes.Assignment(), x, 10);
-            //System.out.println(result);
+            Distribution result = rejectionSampling(x.getVariableByName("family-out"), new Classes.Assignment(), x, 1000);
+            System.out.println(result);
         }catch(Exception ex){}
         
 
 
 
 
+    }
+
+    
+
+    public static Assignment createEvidence(String[] args){
+        if(args.length > 0){
+            System.out.println(args[0]);
+        }
+        
+        return new Classes.Assignment();
     }
 
     public static Classes.Distribution EnumerationInfer(RandomVariable query, Classes.Assignment E, BayesianNetwork network){ //returns a distribution over x
@@ -53,7 +65,8 @@ public class Main {
 
         }
             
-                
+        
+        
         D.normalize();
         return D;
     
@@ -134,30 +147,31 @@ public class Main {
         
         //local vars: C, a vector of counts for each value of X, inditially 0
         Distribution counts = new Classes.Distribution(query);
-        System.out.println(counts);
+        //System.out.println(counts);
         //Distribution counts = new int[query.getDomain().size()];
 
-
+        int goodSamples = 0;
         //for j 1->N do
         for(int i = 0; i<numSamples; i++){
-            System.out.println("taking sample " + i);
+            //System.out.println("taking sample " + i);
             //x <- prior-sample(bn)
             Assignment iid = priorSample(bn);
             
             if(isConsistent(iid, evidence)){
+                goodSamples +=1;
+                //System.out.println(iid.get(query));
 
-                System.out.println(iid.get(query));
 
-
-                System.out.println("debug 2");
+                //System.out.println("debug 2");
                 counts.set(iid.get(query), counts.get(iid.get(query)) + 1.0);
-                System.out.println("debug 3");
+                //System.out.println("debug 3");
             }
             //if x is consistent with e:
                 //C[j]<-C[j]+1 where xj is the value of X in x
 
         }
 
+        System.out.println("Kept: " + Math.round(((double)goodSamples/numSamples)*100) + "% of generated samples");
         //normalize counts;
         counts.normalize();
         return counts;

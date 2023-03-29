@@ -21,6 +21,7 @@ public interface Domain extends Iterable<Value> {
 	public boolean add(Value value);
 	
 	public boolean contains(Object obj);
+	public Value itemAt(int index);
 	
 	public boolean remove(Object obj);
 	

@@ -25,7 +25,7 @@ public class BIF2XMLBIF {
 	public BIF2XMLBIF(){
 
 	}
-	public BayesianNetwork getNetwork() throws IOException, ParserConfigurationException, SAXException {
+	public BayesianNetwork getNetwork(String name) throws IOException, ParserConfigurationException, SAXException {
 		/*String filename = "Examples/dog-problem.bif";
 		String networkName = "Dog-Problem";
 		if (argv.length > 0) {
@@ -38,10 +38,10 @@ public class BIF2XMLBIF {
 		}*/
 
 
-		BIFParser parser = new BIFParser(new FileInputStream("Examples/dog-problem.bif"));
+		BIFParser parser = new BIFParser(new FileInputStream(name));
 		XMLBIFPrinter printer = new XMLBIFPrinter(System.out);
 		BayesianNetwork network = parser.parseNetwork();
-		printer.print(network);
+		//printer.print(network);
 		return network;
 	}
 

@@ -12,4 +12,8 @@ public interface RandomVariable {
     public String getName();
 
     public int getDomainSize();
+
+    public Value getDomainValue(String s);
+    public Value foo();
+    //public Interfaces.Value getDomainValue(String value);
 }
