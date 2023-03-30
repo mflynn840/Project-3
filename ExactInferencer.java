@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,14 +16,16 @@ public class ExactInferencer {
             BayesianNetwork bn = parser.readNetworkFromFile(args[0]);
             RandomVariable query = bn.getVariableByName(args[1]);
             Assignment evidence = getEvidence(bn, args);
-
+            System.out.println(bn.getVariablesSortedTopologically());
             System.out.println(EnumerationInfer(query, evidence, bn));
 
             
 
 
 
-        }catch(Exception ex){}
+        }catch(Exception ex){
+            System.out.println("ERROR: File entered was not found");
+        }
 
 
     }
@@ -51,6 +55,7 @@ public class ExactInferencer {
             }
         }
 
+        System.out.println(evidence);
         return evidence;
     }
 
@@ -74,7 +79,7 @@ public class ExactInferencer {
             copy.put(query, nextDomain);
 
             //find the probability of that possible world using the bayesian network and add it to the distribution
-            D.set(nextDomain, enumerateAll(copy, network, 0));
+            D.put(nextDomain, enumerateAll(copy, network, 0));
 
         }
             
@@ -100,12 +105,15 @@ public class ExactInferencer {
 
         RandomVariable V = vars.get(currIndex);
 
+        System.out.println("evidence is: " + evidence);
         //if V is an evidence variable with value v in e
             //test if V is an evidence variable...means to test if v is in e
 
 
         //if the next node in the networks variable is an observed variable
         if(evidence.containsKey(V)){
+
+            System.out.println("key found");
 
             //not sure why we need to copy this yet
             evidence = evidence.copy();
