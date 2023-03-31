@@ -11,11 +11,13 @@ public class RejectionSampler{
     public static void main(String[] args){
 
         if(args.length > 2){
-            BIF2XMLBIF parser = new BIF2XMLBIF();
+            XMLBIFParser parser = new XMLBIFParser();
             try{
 
                 int numSamples = Integer.valueOf(args[0]);
-                BayesianNetwork bn = parser.getNetwork(args[1]);
+                System.out.println(args[1]);
+                BayesianNetwork bn = parser.readNetworkFromFile(args[1]);
+
                 System.out.println(bn.getVariables());
 
 
@@ -28,7 +30,7 @@ public class RejectionSampler{
 
 
 
-            }catch(Exception ex){}
+            }catch(Exception ex){System.out.println("Malformed query (bad file name or variable not in BN)");}
         }
     }
 
@@ -41,7 +43,7 @@ public class RejectionSampler{
             RandomVariable var = bn.getVariableByName(args[i]);
             i++;
             
-            if(args[i].equals("true") || args[i].equals("false")){
+            if(true){
                 Iterator<Value> domainValues = var.getDomain().iterator();
             
                 while(domainValues.hasNext()){
@@ -108,28 +110,40 @@ public class RejectionSampler{
 
             RandomVariable current = vars.get(i);
             //System.out.println("Current: " + current);
-            Iterator<Value> currentDomain = current.getDomain().iterator();
+            Iterator<Value> dVals = current.getDomain().iterator();
             CPT distribution = bn.getDistribution(current);
-            //System.out.println("debug");
 
+            double random = Math.random();
 
-            //get the value with the probability closest
-            Value firstDomainValue = currentDomain.next();
+            int index = 0;
+            while(dVals.hasNext()){
 
-            //System.out.println(distribution.get(firstDomainValue, x));
+                //System.out.println(distribution);
+                Value currentV = dVals.next();
+                //System.out.println(dVal);
 
-            double nextRandom = rnj.nextDouble();
-            //System.out.println(nextRandom);
-            if(nextRandom < distribution.get(firstDomainValue, x)){
-                //System.out.println("picking true");
-                x.put(current, firstDomainValue);
-            }else{
-                x.put(current, currentDomain.next());
-                //System.out.println("picking false");
+                //System.out.println("Index: " + index + "Domain size: " + current.getDomainSize());
+                //System.out.println(currentV);
+                if(index <= current.getDomainSize()-2){
+                    if(distribution.get(currentV, x) >= random){
+                        //System.out.println("sample");
+                        x.put(current, currentV);
+                        break;
+                    }
+                }else{
+                    //System.out.println("sample 2");
+                    x.put(current, currentV);
+                    //System.out.println("debug");
+                    break;
+                }
+
+                index++;
+
             }
 
-            //System.out.println("Debug 2");
-            //System.out.println(x);
+
+            //System.out.println("debug");
+
 
         }
 

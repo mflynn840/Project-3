@@ -12,7 +12,11 @@ public class ExactInferencer {
     public static void main(String[] args){
 
         XMLBIFParser parser = new XMLBIFParser();
+
+        
         try{
+
+
             BayesianNetwork bn = parser.readNetworkFromFile(args[0]);
             RandomVariable query = bn.getVariableByName(args[1]);
             Assignment evidence = getEvidence(bn, args);
@@ -24,7 +28,7 @@ public class ExactInferencer {
 
 
         }catch(Exception ex){
-            System.out.println("ERROR: File entered was not found");
+            System.out.println("ERROR: File entered was not found or Invalid variable");
         }
 
 
@@ -39,7 +43,7 @@ public class ExactInferencer {
             RandomVariable var = bn.getVariableByName(args[i]);
             i++;
             
-            if(args[i].equals("true") || args[i].equals("false")){
+            if(true){
                 Iterator<Value> domainValues = var.getDomain().iterator();
             
                 while(domainValues.hasNext()){
@@ -105,7 +109,7 @@ public class ExactInferencer {
 
         RandomVariable V = vars.get(currIndex);
 
-        System.out.println("evidence is: " + evidence);
+        //System.out.println("evidence is: " + evidence);
         //if V is an evidence variable with value v in e
             //test if V is an evidence variable...means to test if v is in e
 
@@ -113,7 +117,8 @@ public class ExactInferencer {
         //if the next node in the networks variable is an observed variable
         if(evidence.containsKey(V)){
 
-            System.out.println("key found");
+            //
+            //System.out.println("key found");
 
             //not sure why we need to copy this yet
             evidence = evidence.copy();
